@@ -3,11 +3,8 @@ The idea behind this reposity is to build Reinforcement Learning solutions to di
 
 ### Environments:
 - TicTacToe
----
 - MontainCarContinuous
----
 - Cartpole 
----
 - Breakout and Pong
 - * Solution done with [Samuel Heinrichs](https://github.com/samuelhei)
 
