@@ -4,6 +4,8 @@ The idea behind this reposity is to build Reinforcement Learning solutions to di
 ### Environments:
 - TicTacToe
 ---
+- MontainCarContinuous
+---
 - Cartpole 
 ---
 - Breakout and Pong
