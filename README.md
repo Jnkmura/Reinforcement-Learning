@@ -4,6 +4,7 @@ The idea behind this reposity is to build Reinforcement Learning solutions to di
 ### Algos:
 - **DDPG**
   * MontainCarContinuous
+  * Pendulum
 - **REINFORCE**
   * Cartpole
 - **Q-Learning**
