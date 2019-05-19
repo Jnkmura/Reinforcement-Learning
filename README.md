@@ -6,10 +6,13 @@ The idea behind this reposity is to build Reinforcement Learning solutions to di
   * MontainCarContinuous
   * Pendulum
   * Bipedal Walker
+  
 - **REINFORCE**
   * Cartpole
+  
 - **Q-Learning**
   * TicTacToe
+  
 - **DQN**
   * Cartpole
   * Breakout and Pong
