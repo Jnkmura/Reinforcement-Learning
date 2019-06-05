@@ -63,7 +63,7 @@ class DDPG:
     def train(self, env_name, train_eps = 5000, noise_scale = 0.1):
         
         start_ep = 0
-        start_time = time.time()
+        start_time = str(time.time())
         
         sess.run(tf.global_variables_initializer())   
         writer = tf.summary.FileWriter(os.path.join('logs', env_name.lower(), start_time))
@@ -144,3 +144,4 @@ if __name__=='__main__':
 
     replaybuffer = ExpReplay(5e6)
     ddpg = DDPG(env, state_dim, action_dim, high, low, replaybuffer)
+    ddpg.train(env_name, train_eps = 200)
