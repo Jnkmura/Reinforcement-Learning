@@ -5,14 +5,6 @@ import tensorflow as tf
 import numpy as np
 import time
 import keras
-import matplotlib.pyplot as plt
-from keras.layers import Input, Dense, Lambda, Activation
-from keras.models import Model
-from keras.layers.merge import concatenate, Add
-from IPython.display import clear_output
-
-sess = tf.InteractiveSession()
-keras.backend.set_session(sess)
 
 sys.path.insert(0, '../')
 from utils.noise import OrnsteinUhlenbeckActionNoise
@@ -139,6 +131,9 @@ class DDPG:
         self.env.close()
 
 if __name__=='__main__':
+    sess = tf.InteractiveSession()
+    keras.backend.set_session(sess)
+
     env_name = 'Pendulum-v0'
     env = gym.make(env_name)
 
