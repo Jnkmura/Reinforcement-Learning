@@ -4,8 +4,10 @@ The idea behind this reposity is to build Reinforcement Learning solutions to di
 ### Algos:
 - **DDPG**
   * MontainCarContinuous
-  * Pendulum
   * Bipedal Walker
+  * Pendulum  
+  
+  [[https://github.com/jnkmura/Reinforcement-Learning/blob/master/img/pendulum-v0.png|alt=octocat]]
   
 - **REINFORCE**
   * Cartpole
