@@ -7,7 +7,9 @@ The idea behind this reposity is to build Reinforcement Learning solutions to di
   * Bipedal Walker
   * Pendulum  
   
-  [[https://github.com/jnkmura/Reinforcement-Learning/blob/master/img/pendulum-v0.png|alt=octocat]]
+  `Execute python ddpg.py -env Pendulum-v0 -t 200`
+  
+  ![pendulum-v0](https://user-images.githubusercontent.com/20289509/58998673-53cadc00-87d8-11e9-85a3-f0a6f3a566b0.png)
   
 - **REINFORCE**
   * Cartpole
