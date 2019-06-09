@@ -2,3 +2,4 @@ DDPG/.ipynb_checkpoints
 DDPG/*.ipynb_checkpoints
 __pycache__
 DDPG/logs/
+.vscode
