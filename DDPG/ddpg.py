@@ -11,6 +11,7 @@ sys.path.insert(0, '../')
 from utils.noise import OrnsteinUhlenbeckActionNoise
 from utils.experience_replay import ExpReplay
 from utils.models import Actor, Critic
+from utils.tensorboard_utils import add_histogram
 
 class DDPG:
     
@@ -89,7 +90,8 @@ class DDPG:
         
         exploration_noise = OrnsteinUhlenbeckActionNoise(mu=np.zeros(self.action_dim))
 
-        for train_ep in range(1, train_eps + 1):      
+        for train_ep in range(1, train_eps + 1):
+            start_time_ep = time.process_time()  
             state = self.env.reset()
             
             exploration_noise.reset()
@@ -100,9 +102,10 @@ class DDPG:
             while not ep_done:
                 train_step += 1           
 
-                action = sess.run(self.actor.output, {self.state_ph: state[None]})[0]     
+                action = sess.run(self.actor.output, {self.state_ph: state[None]})[0]
+                noise = exploration_noise() * noise_scaling 
                 
-                action += exploration_noise() * noise_scaling
+                action += noise
                 next_state, reward, done, _ = self.env.step(action)
                 self.replay.add(state, action, reward, next_state, done)
 
@@ -137,14 +140,37 @@ class DDPG:
                     summary=tf.Summary()
                     summary.value.add(tag='Episode Rewards', simple_value = episode_reward)
                     writer.add_summary(summary, start_ep)
+
+                    add_histogram(writer, 'Noise', noise, start_ep)
+                    print('Episode {}- Rewards: {} - Process Time: {}'.format(
+                        start_ep, episode_reward, time.process_time()-start_time_ep))
                     
                     ep_done = True
 
         self.env.close()
 
+    def test_agent(self, env, render = False):
+        import matplotlib.pyplot as plt
+        done = False
+        total_reward = 0
+        s = env.reset()
+        while not done:
+            action = sess.run(self.actor.output, {self.state_ph: s[None]})[0]
+            if render:
+                plt.imshow(env.render('rgb_array'))
+                plt.show()
+            next_state, reward, done, _ = env.step(action)
+            total_reward += reward
+            s = next_state
+
+        env.close()
+        return total_reward
+        
+
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-env', '--enviroment', default='Pendulum-v0')
+    parser.add_argument('-noise', '--noise', default=0.1)
     parser.add_argument('-e', '--exp_replay', default=5e6)
     parser.add_argument('-t', '--train_eps', default=1000)
     args = vars(parser.parse_args())
@@ -162,4 +188,4 @@ if __name__=='__main__':
 
     replaybuffer = ExpReplay(int(args['exp_replay']))
     ddpg = DDPG(env, state_dim, action_dim, high, low, replaybuffer)
-    ddpg.train(env_name, int(args['train_eps']))
+    ddpg.train(env_name, int(args['train_eps']), noise_scale=float(args['noise']))
