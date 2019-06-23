@@ -4,18 +4,20 @@ import numpy as np
 class ExpReplay(object):
     def __init__(self, size):
         self._storage = []
-        self._maxsize = size       
+        self._maxsize = size
+        self._next_idx = 0    
 
     def __len__(self):
         return len(self._storage)
 
     def add(self, s, a, r, next_s, done):
-        data = (s, a, r, next_s, done)
-        
-        self._storage.append(data)
-        storage_size = len(self._storage)
-        if (storage_size >= self._maxsize):
-            self._storage = self._storage[storage_size-self._maxsize:]
+        data = [s, a, r, next_s, done]
+
+        if self._next_idx >= len(self._storage):
+            self._storage.append(data)
+        else:
+            self._storage[self._next_idx] = data
+        self._next_idx = (self._next_idx + 1) % self._maxsize
         
     def sample(self, batch_size):
         idx = np.random.randint(0, len(self._storage), size=batch_size)
