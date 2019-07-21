@@ -2,10 +2,13 @@
 The idea behind this reposity is to build Reinforcement Learning solutions to different type of games / environments.
 
 ### Algos:
+**PPO**
+* BipedalWalker-v2\
+`python ppo.py -env BipedalWalker-v2`
+
 - **DDPG**
 * MontainCarContinuous\
 `python ddpg.py -env MontainCarContinuous-v0 -t 100 -noise 1` 
-* Bipedal Walker
 * Pendulum-v0\
 `python ddpg.py -env Pendulum-v0 -t 200`
   
