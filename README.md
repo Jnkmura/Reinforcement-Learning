@@ -3,14 +3,14 @@ The idea behind this reposity is to build Reinforcement Learning solutions to di
 
 ### Algos:
 - **DDPG**
-* MontainCarContinuous
+* MontainCarContinuous\
 `python ddpg.py -env MontainCarContinuous-v0 -t 100 -noise 1` 
 * Bipedal Walker
-* Pendulum-v0
+* Pendulum-v0\
 `python ddpg.py -env Pendulum-v0 -t 200`
   
 <p align="center"> 
-<img src="https://user-images.githubusercontent.com/20289509/59556403-6bece900-8f98-11e9-9644-ecc52e7cca10.png">
+<img src="https://user-images.githubusercontent.com/20289509/60389885-d033a080-9aa0-11e9-8839-1a8ba0ed5e4f.png">
 </p>
 
 - **REINFORCE**
