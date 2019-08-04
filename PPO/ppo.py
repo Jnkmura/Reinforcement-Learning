@@ -174,15 +174,17 @@ class PPO:
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-env', '--enviroment', default='BipedalWalker-v2')
+    parser.add_argument('-e', '--epochs', default=3000)
     args = vars(parser.parse_args())
 
     env = gym.make(args['enviroment'])
+    epochs = int(args['epochs'])
 
     action_space = env.action_space
     state_dim = env.observation_space.shape
     action_dim = env.action_space.shape
 
-    ppo = PPO(state_dim, action_dim, action_space)
+    ppo = PPO(state_dim, action_dim, action_space, epochs = epochs)
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
     ppo.play(env)
