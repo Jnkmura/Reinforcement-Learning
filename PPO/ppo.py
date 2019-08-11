@@ -6,7 +6,7 @@ import os, sys
 import argparse
 
 sys.path.insert(0, '../')
-from keras.layers import Input, Dense, Activation
+from keras.layers import Input, Dense, Activation, Conv2D, Flatten
 from keras.models import Model
 from keras.layers.merge import concatenate, Add
 from gym.spaces import Box, Discrete
@@ -19,9 +19,37 @@ def gaussian_likelihood(x, mu, log_std):
 class Policy:
     def __init__(self, state_ph, action_ph, action_space):
         self.action_space = action_space
-        x = self.define_layers(state_ph, action_space.shape[0])
+        if len(state_ph.shape.as_list()) > 2:
+            x = self.conv_layers(state_ph, action_space.shape[0])
+        else:
+            x = self.define_layers(state_ph, action_space.shape[0])
+            
         self.pi, self.logp, self.logp_pi = self.define_policy(x, action_ph, action_space)
         self.value = self.define_layers(state_ph, 1)
+
+    def conv_layers(self, state_ph, action_n, ouput_activation = None):
+        inputs = Input(tensor = state_ph)
+        x = Conv2D(filters=32, kernel_size=8, strides=4
+                                ,activation='relu'
+                                ,use_bias=False
+                                ,padding='valid'
+                                ,kernel_initializer=tf.variance_scaling_initializer(scale=2))(inputs) 
+        x = (Conv2D(filters=64, kernel_size=4, strides=2
+                                ,activation='relu'
+                                ,use_bias=False
+                                ,padding='valid'
+                                ,kernel_initializer=tf.variance_scaling_initializer(scale=2)))(x) 
+        x = Conv2D(filters=64, kernel_size=3, strides=1
+                                ,activation='relu'
+                                ,use_bias=False
+                                ,padding='valid'
+                                ,kernel_initializer=tf.variance_scaling_initializer(scale=2))(x)
+        x = Flatten()(x)
+        x = Dense(256, activation='relu'
+        ,kernel_initializer=tf.variance_scaling_initializer(scale=2))(x) 
+        x = Dense(action_n, activation = ouput_activation
+        ,kernel_initializer=tf.variance_scaling_initializer(scale=2))(x)
+        return x 
         
     def define_layers(self, state_ph, action_n, ouput_activation = None):
         inputs = Input(tensor = state_ph)
