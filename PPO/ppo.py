@@ -21,11 +21,12 @@ class Policy:
         self.action_space = action_space
         if len(state_ph.shape.as_list()) > 2:
             x = self.conv_layers(state_ph, action_space.shape[0])
+            self.value = self.conv_layers(state_ph, 1)
         else:
             x = self.define_layers(state_ph, action_space.shape[0])
+            self.value = self.define_layers(state_ph, 1)
             
         self.pi, self.logp, self.logp_pi = self.define_policy(x, action_ph, action_space)
-        self.value = self.define_layers(state_ph, 1)
 
     def conv_layers(self, state_ph, action_n, ouput_activation = None):
         inputs = Input(tensor = state_ph)
@@ -143,7 +144,7 @@ class PPO:
 
         for epoch in range(self.epochs):
             for t in range(self.steps_per_epoch):
-                a, v_t, logp_t = sess.run([self.pi, self.v, self.logp_pi], feed_dict={self.state_ph: np.array(state).reshape(1,-1)})
+                a, v_t, logp_t = sess.run([self.pi, self.v, self.logp_pi], feed_dict={self.state_ph: state[None]})
 
                 self.buf.store(state, a, reward, v_t, logp_t)
                 state, reward, done, _ = env.step(a[0])
@@ -152,7 +153,7 @@ class PPO:
 
                 terminal = done or (ep_len == self.max_ep_len)
                 if terminal or (t==self.steps_per_epoch-1):
-                    last_val = reward if done else sess.run(self.v, feed_dict={self.state_ph: np.array(state).reshape(1,-1)})
+                    last_val = reward if done else sess.run(self.v, feed_dict={self.state_ph: state[None]})
                     self.buf.finish_path(last_val)
                     
                     ep += 1
@@ -188,7 +189,7 @@ class PPO:
         reward = 0
 
         while True:
-            a = sess.run([self.pi], feed_dict={self.state_ph: np.array(s).reshape(1,-1)})
+            a = sess.run([self.pi], feed_dict={self.state_ph: s[None]})
             next_s, r, done, _ = env.step(a[0][0])
             if render:
                 env.render()
