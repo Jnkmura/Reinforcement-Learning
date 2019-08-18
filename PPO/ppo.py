@@ -204,6 +204,7 @@ if __name__=='__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-env', '--enviroment', default='BipedalWalker-v2')
     parser.add_argument('-e', '--epochs', default=3000)
+    parser.add_argument('-cpu', '--cpu', default=2)
     args = vars(parser.parse_args())
 
     env = gym.make(args['enviroment'])
@@ -214,7 +215,11 @@ if __name__=='__main__':
     action_dim = env.action_space.shape
 
     ppo = PPO(state_dim, action_dim, action_space, epochs = epochs)
-    sess = tf.Session()
+
+    session_conf = tf.ConfigProto(
+      intra_op_parallelism_threads=int(args['cpu']),
+      inter_op_parallelism_threads=int(args['cpu']))
+    sess = tf.Session(config=session_conf)
     sess.run(tf.global_variables_initializer())
     ppo.play(env)
 
