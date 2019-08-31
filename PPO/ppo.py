@@ -31,18 +31,15 @@ class Policy:
     def conv_layers(self, state_ph, action_n, ouput_activation = None):
         inputs = Input(tensor = state_ph)
         x = Conv2D(filters=32, kernel_size=8, strides=4
-                                ,activation='relu'
-                                ,use_bias=False
+                                ,activation='tanh'
                                 ,padding='valid'
                                 ,kernel_initializer=tf.variance_scaling_initializer(scale=2))(inputs) 
         x = (Conv2D(filters=64, kernel_size=4, strides=2
-                                ,activation='relu'
-                                ,use_bias=False
+                                ,activation='tanh'
                                 ,padding='valid'
                                 ,kernel_initializer=tf.variance_scaling_initializer(scale=2)))(x) 
         x = Conv2D(filters=64, kernel_size=3, strides=1
-                                ,activation='relu'
-                                ,use_bias=False
+                                ,activation='tanh'
                                 ,padding='valid'
                                 ,kernel_initializer=tf.variance_scaling_initializer(scale=2))(x)
         x = Flatten()(x)
