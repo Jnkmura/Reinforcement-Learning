@@ -11,6 +11,51 @@ from keras.models import Model
 from keras.layers.merge import concatenate, Add
 from gym.spaces import Box, Discrete
 from utils.experience_replay import PPOBuffer
+from gym.core import Wrapper, ObservationWrapper
+from scipy.misc import imresize
+
+class Preprocess(ObservationWrapper):
+    def __init__(self, env):
+        ObservationWrapper.__init__(self,env)
+
+        self.img_size = (env.observation_space.shape[0],
+                         env.observation_space.shape[1],
+                         1)
+        self.observation_space = Box(0.0, 1.0, self.img_size
+                                     , dtype=np.float32)
+
+    def observation(self, img):        
+        
+        # resize and normalize img
+        img = imresize(img, self.img_size)
+        img = img.mean(-1, keepdims=True)
+        img = img.astype('float32') / 255.
+        
+        return img
+
+class FrameBuffer(Wrapper):
+    # stack 4 frames into one state
+    def __init__(self, env, n_frames=4):
+        super(FrameBuffer, self).__init__(env)
+        height, width, n_channels = env.observation_space.shape
+        obs_shape = [height, width, n_channels * n_frames]
+        self.observation_space = Box(0.0, 1.0, obs_shape, dtype=np.float32)
+        self.framebuffer = np.zeros(obs_shape, 'float32')
+        
+    def reset(self):
+        self.framebuffer = np.zeros_like(self.framebuffer)
+        self.update_buffer(self.env.reset())
+        return self.framebuffer
+    
+    def step(self, action):
+        new_img, reward, done, info = self.env.step(action)
+        self.update_buffer(new_img)
+        return self.framebuffer, reward, done, info
+    
+    def update_buffer(self, img):
+        offset = self.env.observation_space.shape[-1]
+        cropped_framebuffer = self.framebuffer[:,:,:-offset]
+        self.framebuffer = np.concatenate([img, cropped_framebuffer], axis = -1)
 
 def gaussian_likelihood(x, mu, log_std):
     pre_sum = -0.5 * (((x-mu)/(tf.exp(log_std)+1e-8))**2 + 2*log_std + np.log(2*np.pi))
@@ -80,9 +125,8 @@ class Policy:
         return self.pi, self.logp, self.logp_pi, self.value 
 
 class PPO:
-    def __init__(self, state_dim,
-                 action_dim,
-                 action_space,
+    def __init__(self, 
+                 env_name,
                  steps_per_epoch=4000,
                  epochs=3000,
                  gamma=0.99,
@@ -108,6 +152,13 @@ class PPO:
         self.max_ep_len = max_ep_len
         self.target_kl = target_kl
         self.save_freq = save_freq
+        self.env_name = env_name
+
+        env = self.create_env()
+
+        action_space = env.action_space
+        state_dim = env.observation_space.shape
+        action_dim = env.action_space.shape
 
         self.state_ph = tf.placeholder('float32', shape = (None,) + state_dim)
         self.action_ph = tf.placeholder('float32', shape = (None,) + action_dim)
@@ -133,7 +184,8 @@ class PPO:
         self.train_pi = tf.train.AdamOptimizer(learning_rate = self.pi_lr).minimize(self.pi_loss)
         self.train_v = tf.train.AdamOptimizer(learning_rate = self.vf_lr).minimize(self.v_loss)
 
-    def play(self, env):
+    def play(self):
+        env = self.create_env()
         ep = 0
         start_time = time.time()
         writer = tf.summary.FileWriter(os.path.join('logs', str(env).lower(), str(start_time)))
@@ -152,6 +204,7 @@ class PPO:
                 if terminal or (t==self.steps_per_epoch-1):
                     last_val = reward if done else sess.run(self.v, feed_dict={self.state_ph: state[None]})
                     self.buf.finish_path(last_val)
+                    env.close()
                     
                     ep += 1
                     summary=tf.Summary()
@@ -182,6 +235,7 @@ class PPO:
             sess.run(self.train_v, feed_dict=inputs)
         
     def evaluate(self, render=False):
+        env = self.create_env()
         s = env.reset()
         reward = 0
 
@@ -195,7 +249,14 @@ class PPO:
             if done:
                 break
                 
+        env.close()
         return reward
+
+    def create_env(self):
+        env = gym.make(self.env_name)
+        env = Preprocess(env)
+        env = FrameBuffer(env, n_frames=4)
+        return env
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
@@ -204,19 +265,15 @@ if __name__=='__main__':
     parser.add_argument('-cpu', '--cpu', default=2)
     args = vars(parser.parse_args())
 
-    env = gym.make(args['enviroment'])
     epochs = int(args['epochs'])
-
-    action_space = env.action_space
-    state_dim = env.observation_space.shape
-    action_dim = env.action_space.shape
-
-    ppo = PPO(state_dim, action_dim, action_space, epochs = epochs)
+    ppo = PPO(args['enviroment'], epochs = epochs)
 
     session_conf = tf.ConfigProto(
       intra_op_parallelism_threads=int(args['cpu']),
       inter_op_parallelism_threads=int(args['cpu']))
     sess = tf.Session(config=session_conf)
     sess.run(tf.global_variables_initializer())
-    ppo.play(env)
+    ppo.play()
 
+    saver = tf.train.Saver()
+    save_path = saver.save(sess, "model.ckpt")
