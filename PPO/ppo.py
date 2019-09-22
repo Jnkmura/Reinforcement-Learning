@@ -12,19 +12,20 @@ from keras.layers.merge import concatenate, Add
 from gym.spaces import Box, Discrete
 from utils.experience_replay import PPOBuffer
 from utils.img_utils import FrameBuffer, Preprocess
+from utils.general import get_placeholders, space_action_placeholders, get_act_dim
 
 def gaussian_likelihood(x, mu, log_std):
     pre_sum = -0.5 * (((x-mu)/(tf.exp(log_std)+1e-8))**2 + 2*log_std + np.log(2*np.pi))
     return tf.reduce_sum(pre_sum, axis=1)
 
 class Policy:
-    def __init__(self, state_ph, action_ph, action_space):
+    def __init__(self, state_ph, action_ph, action_space, action_n):
         self.action_space = action_space
         if len(state_ph.shape.as_list()) > 2:
-            x = self.conv_layers(state_ph, action_space.shape[0])
+            x = self.conv_layers(state_ph, action_n)
             self.value = self.conv_layers(state_ph, 1)
         else:
-            x = self.define_layers(state_ph, action_space.shape[0])
+            x = self.define_layers(state_ph, action_n)
             self.value = self.define_layers(state_ph, 1)
             
         self.pi, self.logp, self.logp_pi = self.define_policy(x, action_ph, action_space)
@@ -64,7 +65,7 @@ class Policy:
             log_std = tf.get_variable(
                 name='log_std', initializer=-0.5*np.ones(act_dim, dtype=np.float32))
             std = tf.exp(log_std)
-            pi = x + tf.random_normal(tf.shape(x)) * std
+            pi = x + tf.random.normal(tf.shape(x)) * std
             logp = gaussian_likelihood(action_ph, x, log_std)
             logp_pi = gaussian_likelihood(pi, x, log_std)
             return pi, logp, logp_pi
@@ -84,17 +85,16 @@ class PPO:
     def __init__(self, 
                  env_name,
                  steps_per_epoch=4000,
-                 epochs=3000,
+                 epochs=50,
                  gamma=0.99,
                  clip_ratio=0.2,
-                 pi_lr=1e-4,
-                 vf_lr=1e-4,
+                 pi_lr=3e-4,
+                 vf_lr=1e-3,
                  train_pi_iters=80,
                  train_v_iters=80,
                  lam=0.97,
                  max_ep_len=10000,
-                 target_kl=0.01,
-                 save_freq=10):
+                 target_kl=0.01):
         
         self.steps_per_epoch = steps_per_epoch
         self.epochs = epochs
@@ -107,26 +107,22 @@ class PPO:
         self.lam = lam
         self.max_ep_len = max_ep_len
         self.target_kl = target_kl
-        self.save_freq = save_freq
         self.env_name = env_name
 
         env = self.create_env()
-
-        action_space = env.action_space
         state_dim = env.observation_space.shape
         action_dim = env.action_space.shape
 
-        self.state_ph = tf.placeholder('float32', shape = (None,) + state_dim)
-        self.action_ph = tf.placeholder('float32', shape = (None,) + action_dim)
-        self.adv_ph = tf.placeholder('float32', shape = (None,))
-        self.ret_ph = tf.placeholder('float32', shape = (None,))
-        self.logp_old_ph = tf.placeholder('float32', shape = (None,))
-    
-        policy = Policy(self.state_ph, self.action_ph, action_space)
+        action_space, action_n = get_act_dim(env)
+        self.state_ph, self.action_ph = space_action_placeholders(env)
+        self.adv_ph, self.ret_ph, self.logp_old_ph = get_placeholders(None, None, None)
+        
+        policy = Policy(self.state_ph, self.action_ph, action_space, action_n)
         self.pi, self.logp, self.logp_pi, self.v = policy.return_main_values()
         
         # Experience buffer
-        self.buf = PPOBuffer(state_dim, action_dim, self.steps_per_epoch, self.gamma, self.lam)
+        self.buf = PPOBuffer(
+            state_dim, action_dim, self.steps_per_epoch, self.gamma, self.lam)
 
         # Losses
         ratio = tf.exp(self.logp - self.logp_old_ph)    
@@ -166,10 +162,12 @@ class PPO:
                     summary=tf.Summary()
                     summary.value.add(tag='Episode Rewards', simple_value = ep_ret)
                     writer.add_summary(summary, ep)
+
+                    print('Episode Reward: {}'.format(ep_ret))
                     
-                    summary=tf.Summary()
-                    summary.value.add(tag='Episode Evalution', simple_value = self.evaluate())
-                    writer.add_summary(summary, ep)
+                    #summary=tf.Summary()
+                    #summary.value.add(tag='Episode Evalution', simple_value = self.evaluate())
+                    #writer.add_summary(summary, ep)
                      
                     state, reward, done, ep_ret, ep_len = env.reset(), 0, False, 0, 0
             self.train()
