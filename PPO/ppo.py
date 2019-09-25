@@ -188,8 +188,11 @@ class PPO:
         for _ in range(self.train_v_iters):
             sess.run(self.train_v, feed_dict=inputs)
         
-    def evaluate(self, render=False):
+    def evaluate(self, render=False, monitor=False):
         env = self.create_env()
+        if monitor:
+            env = gym.wrappers.Monitor(
+                env, "video/", video_callable=lambda episode_id: True,force=True)
         s = env.reset()
         reward = 0
 
@@ -216,7 +219,7 @@ class PPO:
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-env', '--enviroment', default='BipedalWalker-v2')
-    parser.add_argument('-e', '--epochs', default=3000)
+    parser.add_argument('-e', '--epochs', default=50)
     parser.add_argument('-cpu', '--cpu', default=2)
     args = vars(parser.parse_args())
 
@@ -230,5 +233,4 @@ if __name__=='__main__':
     sess.run(tf.global_variables_initializer())
     ppo.play()
 
-    saver = tf.train.Saver()
-    save_path = saver.save(sess, "model.ckpt")
+    ppo.evaluate(render=True, monitor=True)
