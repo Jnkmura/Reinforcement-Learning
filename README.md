@@ -5,6 +5,12 @@ The idea behind this reposity is to build Reinforcement Learning solutions to di
 - **PPO**
   * BipedalWalker-v2\
 `python ppo.py -env BipedalWalker-v2`
+  * LunarLanderContinuous\
+ `python ppo.py -env LunarLanderContinuous-v2 -e 50`
+
+<p align="center"> 
+<img src="https://user-images.githubusercontent.com/20289509/65824822-72505980-e245-11e9-88bf-4e8e45fe9fec.gif" height="200" width="300">
+</p>
 
 - **DDPG**
   * MontainCarContinuous\
