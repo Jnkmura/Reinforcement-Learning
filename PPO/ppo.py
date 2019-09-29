@@ -163,7 +163,7 @@ class PPO:
                     summary.value.add(tag='Episode Rewards', simple_value = ep_ret)
                     writer.add_summary(summary, ep)
 
-                    print('Episode Reward: {}'.format(ep_ret))
+                    print('Episode {} - Reward: {}'.format(ep, ep_ret))
                     
                     #summary=tf.Summary()
                     #summary.value.add(tag='Episode Evalution', simple_value = self.evaluate())
@@ -188,26 +188,35 @@ class PPO:
         for _ in range(self.train_v_iters):
             sess.run(self.train_v, feed_dict=inputs)
         
-    def evaluate(self, render=False, monitor=False):
+    def evaluate(self, render=False, monitor=False, episodes = 20):
         env = self.create_env()
-        if monitor:
-            env = gym.wrappers.Monitor(
-                env, "video/", video_callable=lambda episode_id: True,force=True)
-        s = env.reset()
-        reward = 0
-
-        while True:
-            a = sess.run([self.pi], feed_dict={self.state_ph: s[None]})
-            next_s, r, done, _ = env.step(a[0][0])
-            if render:
-                env.render()
-            reward += r
-            s = next_s
-            if done:
-                break
-                
-        env.close()
-        return reward
+        rewards = []
+        
+        for e in range(episodes):
+            if monitor:
+                env = gym.wrappers.Monitor(
+                    env,
+                    'video/' + str(time.time()) + '/',
+                    video_callable=lambda episode_id: True,
+                    force=True)
+            s = env.reset()
+            reward = 0
+            while True:
+                a = sess.run([self.pi], feed_dict={self.state_ph: s[None]})
+                next_s, r, done, _ = env.step(a[0][0])
+                if render:
+                    env.render()
+                reward += r
+                s = next_s
+                if done:
+                    print('Evaluation Reward: {}'.format(reward))
+                    rewards.append(reward)
+                    break
+                    
+            env.close()
+        avg_rewards =  np.mean(rewards)
+        print('mean rewards over {} episodes: {}'.format(episodes, avg_rewards))
+        return avg_rewards
 
     def create_env(self):
         env = gym.make(self.env_name)
