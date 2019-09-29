@@ -6,3 +6,5 @@ DDPG/logs/
 DQN/.ipynb_checkpoints
 PPO/.ipynb_checkpoints
 REINFORCE/.ipynb_checkpoints
+PPO/video
+PPO/logs
