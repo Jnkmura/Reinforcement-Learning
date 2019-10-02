@@ -17,7 +17,12 @@ The idea behind this reposity is to build Reinforcement Learning solutions to di
 `python ddpg.py -env MontainCarContinuous-v0 -t 100 -noise 1` 
   * Pendulum-v0\
 `python ddpg.py -env Pendulum-v0 -t 200`
-  
+
+
+<p align="center"> 
+<img src="https://user-images.githubusercontent.com/20289509/66009406-b08d8900-e490-11e9-8796-0259e2bb0bf3.gif" height="300" width="300">
+</p>
+
 <p align="center"> 
 <img src="https://user-images.githubusercontent.com/20289509/60389885-d033a080-9aa0-11e9-8839-1a8ba0ed5e4f.png">
 </p>
