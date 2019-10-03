@@ -22,9 +22,8 @@ The idea behind this reposity is to build Reinforcement Learning solutions to di
 <p align="center"> 
 <img src="https://user-images.githubusercontent.com/20289509/66009406-b08d8900-e490-11e9-8796-0259e2bb0bf3.gif" height="300" width="300">
 </p>
-
 <p align="center"> 
-<img src="https://user-images.githubusercontent.com/20289509/60389885-d033a080-9aa0-11e9-8839-1a8ba0ed5e4f.png">
+<img src="https://user-images.githubusercontent.com/20289509/66120970-7b795780-e5b2-11e9-8d3b-8057ea5290df.gif" height="200" width="300">
 </p>
 
 - **REINFORCE**
