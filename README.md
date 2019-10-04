@@ -8,6 +8,10 @@ The idea behind this reposity is to build Reinforcement Learning solutions to di
   * LunarLanderContinuous\
  `python ppo.py -env LunarLanderContinuous-v2 -e 50`
 
+
+<p align="center"> 
+<img src="https://user-images.githubusercontent.com/20289509/66244145-7ebd3200-e6dd-11e9-90f9-fe6a11d14c1c.gif" height="200" width="300">
+</p>
 <p align="center"> 
 <img src="https://user-images.githubusercontent.com/20289509/65824822-72505980-e245-11e9-88bf-4e8e45fe9fec.gif" height="200" width="300">
 </p>
@@ -18,12 +22,11 @@ The idea behind this reposity is to build Reinforcement Learning solutions to di
   * Pendulum-v0\
 `python ddpg.py -env Pendulum-v0 -t 200`
 
-
-<p align="center"> 
-<img src="https://user-images.githubusercontent.com/20289509/66009406-b08d8900-e490-11e9-8796-0259e2bb0bf3.gif" height="300" width="300">
-</p>
 <p align="center"> 
 <img src="https://user-images.githubusercontent.com/20289509/66120970-7b795780-e5b2-11e9-8d3b-8057ea5290df.gif" height="200" width="300">
+</p>
+<p align="center"> 
+<img src="https://user-images.githubusercontent.com/20289509/66009406-b08d8900-e490-11e9-8796-0259e2bb0bf3.gif" height="300" width="300">
 </p>
 
 - **REINFORCE**
