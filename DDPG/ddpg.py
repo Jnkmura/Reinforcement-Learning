@@ -149,22 +149,35 @@ class DDPG:
 
         self.env.close()
 
-    def test_agent(self, env, render = False):
-        import matplotlib.pyplot as plt
-        done = False
-        total_reward = 0
-        s = env.reset()
-        while not done:
-            action = sess.run(self.actor.output, {self.state_ph: s[None]})[0]
-            if render:
-                plt.imshow(env.render('rgb_array'))
-                plt.show()
-            next_state, reward, done, _ = env.step(action)
-            total_reward += reward
-            s = next_state
+    def evaluate(self, env, episodes = 20, render = False, monitor = False):
+        rewards = []
 
-        env.close()
-        return total_reward
+        for e in range(episodes):
+            reward = 0
+            if monitor:
+                env = gym.wrappers.Monitor(
+                    env,
+                    os.path.join('video', str(time.time())),
+                    video_callable=lambda episode_id: True,
+                    force=True)
+            s = env.reset()
+            while True:
+                action = sess.run(self.actor.output, {self.state_ph: s[None]})[0]
+                if render:
+                    env.render()
+                next_state, r, done, _ = env.step(action)
+                reward += r
+
+                if done:
+                    print('Evaluation {} - Reward: {}'.format(e, reward))
+                    rewards.append(reward)
+                    break
+
+                s = next_state
+            env.close()
+        mean_rewards = np.mean(rewards)
+        print('Mean Rewards: {}'.format(mean_rewards))
+        return mean_rewards
         
 
 if __name__=='__main__':
@@ -189,3 +202,5 @@ if __name__=='__main__':
     replaybuffer = ExpReplay(int(args['exp_replay']))
     ddpg = DDPG(env, state_dim, action_dim, high, low, replaybuffer)
     ddpg.train(env_name, int(args['train_eps']), noise_scale=float(args['noise']))
+
+    ddpg.evaluate(env, render = True, monitor = True)
