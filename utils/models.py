@@ -1,7 +1,7 @@
 
 import tensorflow as tf
 import numpy as np
-from keras.layers import Input, Dense, Lambda, Activation
+from keras.layers import Input, Dense, Lambda, Activation, Conv2D, Flatten
 from keras.models import Model
 from keras.layers.merge import concatenate, Add
 
@@ -67,3 +67,39 @@ class Actor:
         train_step = self.optimizer.apply_gradients(zip(self.grads, self.network_params))
 
         return train_step
+
+def generic_model(state_ph,
+                  action_n,
+                  ouput_activation = None,
+                  activation = 'tanh'
+                  ):
+
+    inputs = Input(tensor = state_ph)
+    input_shape = state_ph.shape.as_list()
+
+    if len(input_shape) > 2:   
+        x = Conv2D(filters=32, kernel_size=8, strides=4
+                                ,activation=activation
+                                ,padding='valid'
+                                ,kernel_initializer=tf.variance_scaling_initializer(scale=2))(inputs) 
+        x = (Conv2D(filters=64, kernel_size=4, strides=2
+                                ,activation=activation
+                                ,padding='valid'
+                                ,kernel_initializer=tf.variance_scaling_initializer(scale=2)))(x) 
+        x = Conv2D(filters=64, kernel_size=3, strides=1
+                                ,activation=activation
+                                ,padding='valid'
+                                ,kernel_initializer=tf.variance_scaling_initializer(scale=2))(x)
+        x = Flatten()(x)
+        x = Dense(256, activation='relu'
+        ,kernel_initializer=tf.variance_scaling_initializer(scale=2))(x) 
+        x = Dense(action_n, activation = ouput_activation
+        ,kernel_initializer=tf.variance_scaling_initializer(scale=2))(x)
+        return inputs, x
+
+    x = Dense(100, activation = activation)(inputs)
+    x = Dense(100, activation = activation)(x)
+    x = Dense(100, activation = activation)(x)
+    x = Dense(action_n, activation = ouput_activation)(x)
+    return inputs, x
+
