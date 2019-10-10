@@ -140,7 +140,7 @@ class PPO:
         env = self.create_env()
         ep = 0
         start_time = time.time()
-        writer = tf.summary.FileWriter(os.path.join('logs', str(env).lower(), str(start_time)))
+        writer = tf.summary.FileWriter(os.path.join('logs', self.env_name, str(start_time)))
         state, reward, done, ep_ret, ep_len = env.reset(), 0, False, 0, 0
 
         for epoch in range(self.epochs):
@@ -196,7 +196,7 @@ class PPO:
             if monitor:
                 env = gym.wrappers.Monitor(
                     env,
-                    'video/' + str(time.time()) + '/',
+                    os.path.join('video', str(time.time())),
                     video_callable=lambda episode_id: True,
                     force=True)
             s = env.reset()
