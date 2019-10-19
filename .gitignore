@@ -1,10 +1,9 @@
 DDPG/.ipynb_checkpoints
 DDPG/*.ipynb_checkpoints
 __pycache__
-DDPG/logs/
 .vscode
 DQN/.ipynb_checkpoints
 PPO/.ipynb_checkpoints
 REINFORCE/.ipynb_checkpoints
 */video
-PPO/logs
+*/logs
