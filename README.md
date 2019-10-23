@@ -37,7 +37,16 @@ The idea behind this reposity is to build Reinforcement Learning solutions to di
   
 - **DQN**
   * Cartpole
-  * Breakout and Pong
+<p align="center"> 
+<img src="https://user-images.githubusercontent.com/20289509/67440169-d52bdb00-f5ce-11e9-8f6c-3a40934a69e4.gif" height="250" width="300">
+</p>
+
+* Pong
+<p align="center"> 
+<img src="https://user-images.githubusercontent.com/20289509/67440315-453a6100-f5cf-11e9-9f90-762e29424a89.gif" height="210" width="160">
+</p>
+
+* Breakout
     * Solution done with [Samuel Heinrichs](https://github.com/samuelhei) - Link to video in image below
     
 <p align="center"> 
