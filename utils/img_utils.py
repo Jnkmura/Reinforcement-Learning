@@ -30,10 +30,10 @@ class FrameBuffer(Wrapper):
 
 
 class Preprocess(ObservationWrapper):
-    def __init__(self, env, img_size = None):
-        ObservationWrapper.__init__(self,env)
-
-        if not img_size:
+    def __init__(self, env, img_size = (84, 84, 1)):
+        ObservationWrapper.__init__(self, env)
+        self.img_size = img_size
+        if not self.img_size:
             self.img_size = (env.observation_space.shape[0],
                              env.observation_space.shape[1],
                              1)
@@ -44,6 +44,7 @@ class Preprocess(ObservationWrapper):
     def observation(self, img):        
         
         # resize and normalize img
+        img = img[35:195, 0:160]
         img = imresize(img, self.img_size)
         img = img.mean(-1, keepdims=True)
         img = img.astype('float32') / 255.
