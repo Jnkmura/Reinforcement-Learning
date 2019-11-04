@@ -34,10 +34,10 @@ class DQN:
         self.is_not_done = 1 - self.is_done_ph
 
         inputs, self.output = generic_model(self.obs_ph, action_n, 'linear', 'relu')
-        self.network = Model(inputs, self.output)
+        self.network = tf.keras.models.Model(inputs, self.output)
 
         #target network
-        self.target_network = keras.models.clone_model(self.network) 
+        self.target_network = tf.keras.models.clone_model(self.network) 
 
         # q-values based on choosed actions
         self.action_qvalues = tf.reduce_sum(
@@ -58,7 +58,7 @@ class DQN:
             self.next_max_qsa, self.is_not_done)
         # Loss func
         self.td_loss = tf.reduce_mean(
-            tf.losses.mean_squared_error(
+            tf.losses.huber_loss(
                 labels=self.target_values,
                 predictions=self.action_qvalues))
         self.train_step = tf.train.AdamOptimizer(self.lr).minimize(
@@ -72,6 +72,7 @@ class DQN:
         if len(env.observation_space.shape) > 2:
             env = Preprocess(env)
             env = FrameBuffer(env, n_frames=4)
+        env.reset()
         return env
 
     def get_action(self, env, state):
@@ -116,15 +117,17 @@ class DQN:
         print('mean rewards over {} episodes: {}'.format(episodes, avg_rewards))
         return avg_rewards
 
-    def play(self, env, exp_replay, n_steps=1000, custom_reward = 0, stop = True):
-        state = env.env.state
+    def play(self, env, exp_replay, n_steps=25, custom_reward = 0, stop = False):
+        if len(env.observation_space.shape) > 2:
+            state = env.framebuffer
+        else:
+            state = env.env.state
+
         if state is None:
             state = env.reset()
         else:
             state = np.array(state)
-        if len(env.observation_space.shape) > 2:
-            state = env.framebuffer
-       
+        
         last_info = None
         total_reward = 0
         for steps in range(n_steps):
@@ -150,18 +153,21 @@ class DQN:
     def train(self,
             exp_replay,
             iterations,
-            steps = 1000,
+            steps = 25,
             batch = 64,
             eps_decrease = 0.9,
             games_eval = 3,
-            eval_freq = 100):
+            eval_freq = 100,
+            transf_freq = 500,
+            eps_decrease_freq = 500
+            ):
 
         env = self.create_env()
         env.reset()
         eval = 0
    
         for i in tqdm(range(iterations)):
-            self.play(env, exp_replay, n_steps = steps)
+            self.play(env, exp_replay, n_steps = steps, custom_reward = -10)
 
             obs_batch, act_batch, reward_batch, next_obs_batch, is_done_batch = exp_replay.sample(batch)
             sess.run([self.train_step, self.td_loss], {
@@ -172,10 +178,10 @@ class DQN:
                                     ,self.is_done_ph:is_done_batch
                                 })
 
-            if i % 10 == 0:
+            if i % transf_freq == 0:
                 self.transfer_weights()
 
-            if i % 100 == 0:
+            if i % eps_decrease_freq == 0:
                 self.epsilon = max(self.epsilon * eps_decrease, 0.01) 
 
             if i % eval_freq == 0:
@@ -188,13 +194,16 @@ class DQN:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-env', '--enviroment', default='CartPole-v0')
-    parser.add_argument('-exp_size', '--exp_size', default=30000)
+    parser.add_argument('-env', '--enviroment', default='PongDeterministic-v4')
+    parser.add_argument('-exp_size', '--exp_size', default=50000)
     parser.add_argument('-epsilon', '--epsilon', default=0.5)
     parser.add_argument('-d', '--double', default="")
-    parser.add_argument('-i', '--iterations', default=1500)
-    parser.add_argument('-eps_d', '--eps_decrease', default=0.97)
+    parser.add_argument('-i', '--iterations', default=100000)
+    parser.add_argument('-eps_d', '--eps_decrease', default=0.995)
     parser.add_argument('-warm', '--warm', default=1)
+    parser.add_argument('-transf_freq', '--transf_freq', default=500)
+    parser.add_argument('-eps_decrease_freq', '--eps_decrease_freq', default=500)
+    parser.add_argument('-steps_per_iteration', '--steps_per_iteration', default=25)
     args = vars(parser.parse_args())
 
     tf.reset_default_graph()
@@ -212,11 +221,17 @@ if __name__ == '__main__':
     if warm:
         print('Warming up...')
         dqn.play(dqn.create_env(), exp_replay, n_steps=size, stop = False)
+        print('Expsize: {}'.format(len(exp_replay)))
 
+    print(args['eps_decrease'])
     dqn.train(
         exp_replay,
         int(args['iterations']),
-        eps_decrease = float(args['eps_decrease']))
+        eps_decrease = float(args['eps_decrease']),
+        transf_freq = int(args['transf_freq']),
+        eps_decrease_freq = int(args['eps_decrease_freq']),
+        steps = int(args['steps_per_iteration'])
+        )
 
     dqn.evaluate(monitor=True, greedy=True)
 
