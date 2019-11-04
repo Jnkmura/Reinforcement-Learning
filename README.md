@@ -10,10 +10,7 @@ The idea behind this reposity is to build Reinforcement Learning solutions to di
 
 
 <p align="center"> 
-<img src="https://user-images.githubusercontent.com/20289509/66244145-7ebd3200-e6dd-11e9-90f9-fe6a11d14c1c.gif" height="200" width="300">
-</p>
-<p align="center"> 
-<img src="https://user-images.githubusercontent.com/20289509/65824822-72505980-e245-11e9-88bf-4e8e45fe9fec.gif" height="200" width="300">
+<img src="https://user-images.githubusercontent.com/20289509/66244145-7ebd3200-e6dd-11e9-90f9-fe6a11d14c1c.gif" height="200" width="300"><img src="https://user-images.githubusercontent.com/20289509/65824822-72505980-e245-11e9-88bf-4e8e45fe9fec.gif" height="200" width="300">
 </p>
 
 - **DDPG**
@@ -23,10 +20,7 @@ The idea behind this reposity is to build Reinforcement Learning solutions to di
 `python ddpg.py -env Pendulum-v0 -t 200`
 
 <p align="center"> 
-<img src="https://user-images.githubusercontent.com/20289509/66120970-7b795780-e5b2-11e9-8d3b-8057ea5290df.gif" height="200" width="300">
-</p>
-<p align="center"> 
-<img src="https://user-images.githubusercontent.com/20289509/66009406-b08d8900-e490-11e9-8796-0259e2bb0bf3.gif" height="300" width="300">
+<img src="https://user-images.githubusercontent.com/20289509/66120970-7b795780-e5b2-11e9-8d3b-8057ea5290df.gif" height="200" width="300"><img src="https://user-images.githubusercontent.com/20289509/66009406-b08d8900-e490-11e9-8796-0259e2bb0bf3.gif" height="200" width="200">
 </p>
 
 - **REINFORCE**
@@ -37,7 +31,14 @@ The idea behind this reposity is to build Reinforcement Learning solutions to di
   
 - **DQN**
   * Cartpole
-  * Breakout and Pong
+  * Pong
+  * SpaceInvaders
+  
+<p align="center"> 
+<img src="https://user-images.githubusercontent.com/20289509/67440169-d52bdb00-f5ce-11e9-8f6c-3a40934a69e4.gif" height="210" width="300"><img src="https://user-images.githubusercontent.com/20289509/67724926-629c7000-f9bf-11e9-8e16-7cdc3e01f5d6.gif" height="210" width="160"><img src="https://user-images.githubusercontent.com/20289509/67724825-13563f80-f9bf-11e9-9bab-3b55587c14c3.gif" height="210" width="160">
+</p>
+
+* Breakout
     * Solution done with [Samuel Heinrichs](https://github.com/samuelhei) - Link to video in image below
     
 <p align="center"> 
