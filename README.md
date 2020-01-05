@@ -35,7 +35,7 @@ The idea behind this reposity is to build Reinforcement Learning solutions to di
   * SpaceInvaders
   
 <p align="center"> 
-<img src="https://user-images.githubusercontent.com/20289509/67440169-d52bdb00-f5ce-11e9-8f6c-3a40934a69e4.gif" height="210" width="300"><img src="https://user-images.githubusercontent.com/20289509/67724926-629c7000-f9bf-11e9-8e16-7cdc3e01f5d6.gif" height="210" width="160"><img src="https://user-images.githubusercontent.com/20289509/67724825-13563f80-f9bf-11e9-9bab-3b55587c14c3.gif" height="210" width="160">
+<img src="https://user-images.githubusercontent.com/20289509/67440169-d52bdb00-f5ce-11e9-8f6c-3a40934a69e4.gif" height="210" width="300"><img src="https://user-images.githubusercontent.com/20289509/71787149-ffe4d780-2ff2-11ea-965d-daa054c53dfd.gif" height="210" width="160"><img src="https://user-images.githubusercontent.com/20289509/67724825-13563f80-f9bf-11e9-9bab-3b55587c14c3.gif" height="210" width="160">
 </p>
 
 * Breakout
