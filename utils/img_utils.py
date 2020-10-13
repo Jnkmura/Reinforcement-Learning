@@ -1,6 +1,6 @@
 
 from gym.core import Wrapper, ObservationWrapper
-from scipy.misc import imresize
+from skimage.transform import resize
 from gym.spaces import Box, Discrete
 import numpy as np
 
@@ -45,7 +45,7 @@ class Preprocess(ObservationWrapper):
         
         # resize and normalize img
         img = img[35:195, 0:160]
-        img = imresize(img, self.img_size)
+        img = resize(img, self.img_size)
         img = img.mean(-1, keepdims=True)
         img = img.astype('float32') / 255.
         

@@ -227,7 +227,7 @@ class PPO:
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-env', '--enviroment', default='BipedalWalker-v2')
+    parser.add_argument('-env', '--enviroment', default='BipedalWalker-v3')
     parser.add_argument('-e', '--epochs', default=50)
     parser.add_argument('-cpu', '--cpu', default=2)
     args = vars(parser.parse_args())
