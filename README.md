@@ -4,9 +4,9 @@ The idea behind this reposity is to build Reinforcement Learning solutions to di
 ### Algos:
 - **PPO**
   * BipedalWalker-v2\
-`python ppo.py -env BipedalWalker-v2`
+`python ppo.py -env BipedalWalker-v3`
   * LunarLanderContinuous\
- `python ppo.py -env LunarLanderContinuous-v3 -e 50`
+ `python ppo.py -env LunarLanderContinuous-v2 -e 50`
 
 
 <p align="center"> 
