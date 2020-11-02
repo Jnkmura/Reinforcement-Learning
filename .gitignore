@@ -7,3 +7,5 @@ PPO/.ipynb_checkpoints
 REINFORCE/.ipynb_checkpoints
 */video
 */logs
+*/logs/*
+logs
