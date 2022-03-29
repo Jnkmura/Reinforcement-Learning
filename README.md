@@ -15,7 +15,7 @@ The idea behind this reposity is to build Reinforcement Learning solutions to di
 
 - **DDPG**
   * MontainCarContinuous\
-`python ddpg.py -env MontainCarContinuous-v0 -t 100 -noise 1` 
+`python ddpg.py -env MountainCarContinuous-v0 -t 100 -noise 1` 
   * Pendulum-v0\
 `python ddpg.py -env Pendulum-v0 -t 200`
 
