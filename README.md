@@ -1,6 +1,9 @@
 # Reinforcement Learning Solutions
 The idea behind this reposity is to build Reinforcement Learning solutions to different type of games / environments.
 
+### Requisite:
+  * `python 3.7`
+
 ### Algos:
 - **PPO**
   * BipedalWalker-v2\
